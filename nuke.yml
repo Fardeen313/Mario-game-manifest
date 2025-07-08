@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: scheduled-nuke
+  namespace: test
+spec:
+  schedule: "30 8 * * *"  # Runs every day at 2:00 PM IST
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: nuker
+            image: bitnami/kubectl:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "🔥 Scheduled nuke at $(date)..."
+              kubectl delete all --all -n test
+              kubectl delete configmap --all -n test --ignore-not-found
+              kubectl delete secret --all -n test --ignore-not-found
+              kubectl delete ingress --all -n test --ignore-not-found
+              echo "✅ Nuked all resources in test namespace"

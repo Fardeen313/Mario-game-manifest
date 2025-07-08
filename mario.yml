@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: mario
-        image: fardeenattar/mario-image:20250708105034
+        image: fardeenattar/mario-image:20250708120846
         ports:
         - containerPort: 80  # The container listens on port 80
 ---

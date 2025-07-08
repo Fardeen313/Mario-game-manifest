@@ -1,66 +1,66 @@
-# ServiceAccount
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: nuker
-  namespace: test
----
-# RBAC Role
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  namespace: test
-  name: nuker-role
-rules:
-- apiGroups: [""]
-  resources: ["pods", "services", "configmaps", "secrets"]
-  verbs: ["delete", "list"]
-- apiGroups: ["apps"]
-  resources: ["deployments", "replicasets"]
-  verbs: ["delete", "list"]
-- apiGroups: ["networking.k8s.io"]
-  resources: ["ingresses"]
-  verbs: ["delete", "list"]
----
-# RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: nuker-binding
-  namespace: test
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: nuker-role
-subjects:
-- kind: ServiceAccount
-  name: nuker
-  namespace: test
----
-# CronJob
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: scheduled-nuke
-  namespace: test
-spec:
-  schedule: "40 8 * * *"  # 🔥 Daily at 2:10 PM IST
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          serviceAccountName: nuker
-          restartPolicy: Never
-          containers:
-          - name: nuker
-            image: bitnami/kubectl:latest
-            command:
-            - /bin/sh
-            - -c
-            - |
-              echo "🔥 Nuking test namespace at $(date)"
-              kubectl delete all --all -n test
-              kubectl delete ingress --all -n test --ignore-not-found
-              kubectl delete configmap --all -n test --ignore-not-found
-              kubectl delete secret --all -n test --ignore-not-found
-              echo "✅ Done nuking resources"
+# # ServiceAccount
+# apiVersion: v1
+# kind: ServiceAccount
+# metadata:
+#   name: nuker
+#   namespace: test
+# ---
+# # RBAC Role
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: Role
+# metadata:
+#   namespace: test
+#   name: nuker-role
+# rules:
+# - apiGroups: [""]
+#   resources: ["pods", "services", "configmaps", "secrets"]
+#   verbs: ["delete", "list"]
+# - apiGroups: ["apps"]
+#   resources: ["deployments", "replicasets"]
+#   verbs: ["delete", "list"]
+# - apiGroups: ["networking.k8s.io"]
+#   resources: ["ingresses"]
+#   verbs: ["delete", "list"]
+# ---
+# # RoleBinding
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: RoleBinding
+# metadata:
+#   name: nuker-binding
+#   namespace: test
+# roleRef:
+#   apiGroup: rbac.authorization.k8s.io
+#   kind: Role
+#   name: nuker-role
+# subjects:
+# - kind: ServiceAccount
+#   name: nuker
+#   namespace: test
+# ---
+# # CronJob
+# apiVersion: batch/v1
+# kind: CronJob
+# metadata:
+#   name: scheduled-nuke
+#   namespace: test
+# spec:
+#   schedule: "40 8 * * *"  # 🔥 Daily at 2:10 PM IST
+#   jobTemplate:
+#     spec:
+#       template:
+#         spec:
+#           serviceAccountName: nuker
+#           restartPolicy: Never
+#           containers:
+#           - name: nuker
+#             image: bitnami/kubectl:latest
+#             command:
+#             - /bin/sh
+#             - -c
+#             - |
+#               echo "🔥 Nuking test namespace at $(date)"
+#               kubectl delete all --all -n test
+#               kubectl delete ingress --all -n test --ignore-not-found
+#               kubectl delete configmap --all -n test --ignore-not-found
+#               kubectl delete secret --all -n test --ignore-not-found
+#               echo "✅ Done nuking resources"

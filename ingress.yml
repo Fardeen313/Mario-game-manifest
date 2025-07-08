@@ -13,6 +13,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: my-app-lb
+            name: mario-svc
             port:
               number: 90  # Forward all traffic to service port 90
